@@ -1,0 +1,90 @@
+
+--- DDL de administração - Sistema dbKernel
+
+--- Criação do Schema
+CREATE SCHEMA dbo;
+GO
+
+-- 1.  Tabela de Logs (Auditoria)
+CREATE TABLE dbKernel.dbo.TB_LOG_SISTEMA (
+    LOG_ID int IDENTITY(1,1) NOT NULL,
+    UCN_ID int NOT NULL,
+    LOG_TYP int NOT NULL,
+    LOG_POS varchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    LOG_DSC varchar(500) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    LOG_DTA_INC datetime2 NOT NULL,
+    CONSTRAINT PK_TB_LOG_SISTEMA PRIMARY KEY (LOG_ID)
+);
+
+-- 2. Dicionário de Objetos (Mapeamento de Telas/Funcionalidades)
+CREATE TABLE dbKernel.dbo.TB_OBJ_OBJETO_SISTEMA (
+    OBJ_ID int IDENTITY(1,1) NOT NULL,
+    OBJ_NAM nvarchar(200) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    OBJ_DSC nvarchar(400) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    OBJ_STA char(1) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    CONSTRAINT TB_OBJ_OBJETO_SISTEMA_PK PRIMARY KEY (OBJ_ID)
+);
+
+-- 3. Perfis de Acesso (Entidade Pai)
+CREATE TABLE dbKernel.dbo.TB_PRF_PERFIL_ACESSO (
+    PRF_ID int IDENTITY(1,1) NOT NULL,
+    PRF_DSC varchar(60) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    PRF_STA char(1) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    CONSTRAINT PK_TB_PRF_PERFIL_ACESSO PRIMARY KEY (PRF_ID)
+);
+
+
+-- 4. Controle de Sessões (Usuários Conectados)
+CREATE TABLE dbKernel.dbo.TB_UCN_USUARIOS_CONECTADOS (
+    UCN_ID int IDENTITY(1,1) NOT NULL,
+    USU_ID int NOT NULL,
+    UCN_DTA_INC datetime2 NOT NULL,
+    UCN_AGT varchar(500) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    UCN_DTA_OFF datetime2 NULL,
+    UCN_SESSION_ID varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    CONSTRAINT PK_TB_UCN_USUARIOS_CONECTADOS PRIMARY KEY (UCN_ID)
+);
+
+
+-- Índice para performance de busca por usuário em sessões
+CREATE NONCLUSTERED INDEX IDX_UCN_USUARIO ON 
+dbKernel.dbo.TB_UCN_USUARIOS_CONECTADOS ( USU_ID ASC) ;
+
+-- 5. Matriz de Permissões (N:N entre Objeto e Perfil)
+CREATE TABLE dbKernel.dbo.TB_OBJ_PRF_OBJETO_PERFIL (
+    OBJ_ID int NOT NULL,
+    PRF_ID int NOT NULL,
+-- Consulta 
+    OBJ_PRF_CNT char(1) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+-- Inserção 
+    OBJ_PRF_INP char(1) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+-- Edição
+    OBJ_PRF_UPT char(1) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+-- Exclusão 
+    OBJ_PRF_DEL char(1) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+-- Impressão    
+    OBJ_PRF_PRT char(1) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,    
+    OBJ_PRF_OBS char(100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+    CONSTRAINT TB_OBJ_PRF_OBJETO_PERFIL_TB_OBJ_OBJETO_SISTEMA_FK 
+    FOREIGN KEY (OBJ_ID) REFERENCES dbKernel.dbo.TB_OBJ_OBJETO_SISTEMA(OBJ_ID),
+    CONSTRAINT TB_OBJ_PRF_OBJETO_PERFIL_TB_PRF_PERFIL_ACESSO_FK 
+    FOREIGN KEY (PRF_ID) REFERENCES dbKernel.dbo.TB_PRF_PERFIL_ACESSO(PRF_ID)
+); 
+
+-- 6. Cadastro de Usuários (Entidade Filha de Perfil)
+CREATE TABLE dbKernel.dbo.TB_USU_USUARIOS (
+    USU_ID int IDENTITY(1,1) NOT NULL,
+    PRF_ID int NOT NULL,
+    USU_LOG varchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    USU_PWD varchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    USU_NAM varchar(80) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    USU_DTA_INC date NOT NULL,
+    USU_DTA_FIN date NULL,
+    USU_STA char(1) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    USU_CNT char(1) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+    USU_EMAIL nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+    USU_CEL nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+    CONSTRAINT PK_TB_USU_USUARIOS PRIMARY KEY (USU_ID),
+    CONSTRAINT PK_TB_USU_USUARIOS_PRF 
+    FOREIGN KEY (PRF_ID) REFERENCES dbKernel.dbo.TB_PRF_PERFIL_ACESSO(PRF_ID)
+);

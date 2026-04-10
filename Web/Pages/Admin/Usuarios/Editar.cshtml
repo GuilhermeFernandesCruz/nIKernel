@@ -1,0 +1,65 @@
+@page "{id:int}"
+@model nIKernel.Pages.Admin.Usuarios.EditarModel
+@{
+    ViewData["Title"]= "Editar Usuário";
+}
+
+<div class="d-flex justify-contet-between align-items-center mb-4">
+    <h2><i class="bi bi-pencil-square"></i> Editar Usuário</h2>
+    <a asp-page="./Index" class="btn btn-outline-secondary">Voltar</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card body">
+        <form method="post">
+            <input type="hidden" asp-for="Usuario.USU_ID" />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Usuario.USU_NAM" class="form-label fw-bold">Nome Completo</label>
+                    <input asp-for="Usuario.USU_NAM" class="form-control" />
+                    <span asp-validation-for="Usuario.USU_NAM" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Usuario.PRF_ID" class="form-label fw-bold">Perfil de Acesso</label>
+                    <select asp-for="Usuario.PRF_ID" asp-items="Model.Perfis" class="form-select"></select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Login (Não alterável)</label>
+                    <input asp-for="Usuario.USU_LOG" class="form-control bg-light" readonly />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Usuario.USU_STA" class="form-label fw-bold">Status</label>
+                    <select asp-for="Usuario.USU_STA" class="form-select"> 
+                        <option value="A">Ativo</option>
+                        <option value="I">Inativo</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3 d-flex align-items-end">
+                    <div class="alert alert-info py-2 mb-0 small w-100">
+                        <i class="bi bi-info-circle"></i> Senha gerida via Reset.
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                 <div class="col-md-6 mb-3">
+                    <label asp-for="Usuario.USU_EMAIL" class="form-label fw-bold">E-mail</label>
+                    <input asp-for="Usuario.USU_EMAIL" class="form-control" />
+                    <span asp-validation-for="Usuario.USU_EMAIL" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Usuario.USU_CEL" class="form-label fw-bold">Celular</label>
+                    <input asp-for="Usuario.USU_CEL" class="form-control" />
+                    <span asp-validation-for="Usuario.USU_CEL" class="text-danger small"></span>
+                </div>
+            <div/>
+
+            <div class="d-flex justify-content-end mt-3">
+                <button type="submit" class="btn btn-primary px-5"> Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>

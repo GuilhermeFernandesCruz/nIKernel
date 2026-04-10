@@ -1,0 +1,51 @@
+@page
+@model nIKernel.Pages.Admin.ConectadosModel 
+@{
+    ViewData["Title"] = "Usuários Conectados";
+
+    // Budca a Claim especifica desta tela
+    var claimConectados = User.FindFirst("Permissao_Conectados")?.Value;
+    // Verifica se a claim existe e se a 4ª posição (DEL - índice 3) tem permissão (S)
+    bool podeDerrubar = !string.IsNullOrEmpty(claimConectados) && claimConectados.Split(',')[3].Trim().ToUpper() == "S";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-cpu me-2"></i>Monitoranmento de Sessões</h6>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>Inicio</th>
+                    <th>Sessão</th>
+                    <th>Dispositivo</th>
+                    <th class="text-center">Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ListaConectados)
+                {
+                    <tr>
+                        <td>@item.USU_LOG</td>
+                        <td>@item.USU_DTA_INC.ToString("dd/MM/HH:mm")</td>
+                        <td class="small text-muted text-truncate" style="max-width: 150px">@item.UCN_SESSION_ID</td>
+                        <td class="small text-muted">@item.UCN_AGT</td>
+                        <td class="text-center">
+                            @if (podeDerrubar) {
+                                <form method="post" asp-page-handler="Derrubar" asp-route-id="@item.UCN_ID">
+                                    <button class="btn btn-sm btn-danger">
+                                        <i class="bi bi-plug"></i>Derrubar
+                                    </button>
+                                </form>
+                            } else {
+                                <span class="badge bg-secondary">Somente Leitura</span>
+                            }
+                        </td> 
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

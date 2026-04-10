@@ -1,0 +1,38 @@
+@* Código gerado pelo GPT *@
+@page
+@model nIKernel.Pages.Admin.Usuarios.IndexModel
+
+@{
+    ViewData["Title"] = "Usuários";
+}
+
+<h2>Lista de Usuários</h2>
+
+@if (!Model.Usuarios.Any())
+{
+    <p>Nenhum usuário encontrado.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var usuario in Model.Usuarios)
+        {
+            <tr>
+                <td>@usuario.USU_ID</td>
+                <td>@usuario.USU_NAM</td>
+                <td>@usuario.USU_CEL</td>
+                <td>@usuario.USU_EMAIL</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

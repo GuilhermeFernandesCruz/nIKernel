@@ -1,0 +1,141 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+/* ==========================================
+   ESTRUTURA EM "L" DO NIKERNEL (Sidebar + Header)
+   ========================================== */
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+.wrapper {
+    display: flex;
+    height: 100vh;
+}
+
+/* Menu Lateral (Sidebar) */
+.sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background-color: #212529; /* Fundo escuro elegante */
+    color: white;
+    transition: all 0.3s;
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, .75);
+    font-weight: 500;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, .1);
+}
+
+.sidebar .nav-link.active {
+    background-color: #0d6efd; /* Azul padrão para a tela ativa */
+    color: white;
+}
+
+/* Área da Direita (Conteúdo + Header) */
+.main-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Barra Superior (Topbar) */
+.topbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,.08);
+    z-index: 10;
+}
+
+/* Reduz o tamanho base para 13px (proporcional ao que você gostou) */
+html, body {
+    font-size: 13px !important;
+    color: #333;
+}
+
+/* Padroniza todas as células de tabela para o tamanho da sua 1ª coluna */
+.table td, .table th {
+    font-size: 12.5px !important; /* Tamanho aproximado da coluna rosa que você curtiu */
+    padding: 0.4rem 0.6rem !important;
+}
+
+/* Deixa os cabeçalhos (th) em negrito, mas com fonte pequena */
+.table th {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    color: #555;
+    font-size: 11px !important; /* Cabeçalhos ligeiramente menores que os dados */
+}
+
+/* Ajusta os badges (Ativo) para não ficarem gigantes */
+.badge {
+    font-size: 10px !important;
+    padding: 0.35em 0.65em;
+    font-weight: 600;
+}
+
+/* Ajusta os botões e inputs para acompanharem a escala */
+.btn, .form-control, .form-select {
+    font-size: 12px !important;
+    padding: 0.25rem 0.5rem !important;
+}
+
+/* Ajusta o topo da página (User info e Logout) */
+header, .navbar, .top-bar {
+    font-size: 12px !important;
+}
+
+header i.bi {
+    font-size: 14px !important;
+}
+
+/* Resolve o conflito de cores e sobreposição do preenchimento automático */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px white inset !important; /* Mantém o fundo branco */
+    -webkit-text-fill-color: #333 !important; /* Garante que o texto fique visível */
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Garante que o placeholder (texto de fundo) suma imediatamente ao digitar */
+.form-control:focus::placeholder {
+    color: transparent;
+}

@@ -1,0 +1,73 @@
+@page
+@model nIKernel.Pages.Admin.Usuarios.CriarModel;
+@{
+    ViewData["Title"]= "Novo Usuário";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-person-plus"></i> Novo Usuário</h2>
+    <a asp-page="./Index" class="btn btn-outline-secondary">Voltar</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="post">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Usuario.USU_NAM" class="form-label fw-bold">Nome Completo</label>
+                    <input asp-for="Usuario.USU_NAM" class="form-control" placeholder="Ex: Pedro Alves" />
+                    <span asp-validation-for="Usuario.USU_NAM" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Usuario.PRF_ID" class="form-label fw-bold">Peril de Acesso</label>
+                    <select asp-for="Usuario.PRF_ID" asp-items="Model.Perfis" class="form-select">
+                        <option value="">-- Selecione um Perfil --</option>
+                    </select>
+                    <span asp-validation-for="Usuario.PRF_ID" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Usuario.USU_LOG" class="form-label fw-bold">Login (Acesso)</label>
+                    <input asp-for="Usuario.USU_LOG" class="form-control" />
+                    <span asp-validation-for="Usuario.USU_LOG" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Usuario.USU_PWD" class="form-label fw-bold">Senha</label>
+                    <input asp-for="Usuario.USU_PWD" class="form-control" type="password"/>
+                    <span asp-validation-for="Usuario.USU_PWD" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Usuario.ConfirmarSenha" class="form-label fw-bold">Confirmar Senha</label>
+                    <input asp-for="Usuario.ConfirmarSenha" class="form-control" type="password"/>
+                    <span asp-validation-for="Usuario.ConfirmarSenha" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Usuario.USU_STA" class="form-label fw-bold">Status</label>
+                    <select asp-for="Usuario.USU_STA" class="form-select"> 
+                        <option value="A">Ativo</option>
+                        <option value="I">Inativo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Usuario.USU_EMAIL" class="form-label fw-bold">E-mail</label>
+                    <input asp-for="Usuario.USU_EMAIL" class="form-control" placeholder="email@exemplo.com" />
+                    <span asp-validation-for="Usuario.USU_EMAIL" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Usuario.USU_CEL" class="form-label fw-bold">Celular</label>
+                    <input asp-for="Usuario.USU_CEL" class="form-control" placeholder="(00) 00000-0000" />
+                    <span asp-validation-for="Usuario.USU_CEL" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+                <button type="submit" class="btn btn-sucess px-5">Salvar Usuário</button>
+            </div>
+        </form>
+    </div>
+</div>
