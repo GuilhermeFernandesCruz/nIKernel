@@ -1,0 +1,41 @@
+@page
+@model Web.Pages.Admin.Produtos.IndexModel
+@{
+    ViewData["Title"] = "Produtos";
+}
+
+<h1>Produtos</h1>
+<a asp-page="Criar" class="btn btn-primary mb-2">Novo Produto</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+            <th>GTIN/EAN</th>
+            <th>Preço Venda</th>
+            <th>Ativo</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var produto in Model.Produtos)
+    {
+        <tr>
+            <td>@produto.prd_cod</td>
+            <td>@produto.prd_descricao</td>
+            <td>@produto.prd_gtin_ean</td>
+            <td>@produto.prd_preco_venda.ToString("C")</td>
+            <td>@(produto.prd_ativo ? "Sim" : "Não")</td>
+            <td>
+                <a asp-page="Editar" asp-route-id="@produto.prd_id" class="btn btn-sm btn-warning">Editar</a>
+                <!--
+                <form method="post" asp-page-handler="Deletar" asp-route-id="@produto.prd_id" style="display:inline">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Deseja excluir este produto?');">Excluir</button>
+                </form>
+                -->
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
