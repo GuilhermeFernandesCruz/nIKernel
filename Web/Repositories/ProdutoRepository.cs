@@ -1,5 +1,5 @@
 using Dapper;
-using Microsoft.Data.SqlClient;
+using MySqlConnector;
 using Web.Models.Produto;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace Web.Repositories
 
         public async Task<IEnumerable<ProdutoModel>> ListarTodosAsync()
         {
-            using var db = new SqlConnection(_connectionString);
+            using var db = new MySqlConnection(_connectionString);
             string sql = @"SELECT prd_id, prd_cod, prd_gtin_ean, prd_descricao, prd_un_compra, prd_un_venda, 
                                   prd_preco_compra, prd_margem_venda, prd_preco_venda, prd_ativo, prd_data_criacao
                            FROM TB_PRD_PRODUTO
@@ -29,7 +29,7 @@ namespace Web.Repositories
 
         public async Task<ProdutoModel?> BuscarPorIdAsync(int id)
         {
-            using var db = new SqlConnection(_connectionString);
+            using var db = new MySqlConnection(_connectionString);
             string sql = @"SELECT prd_id, prd_cod, prd_gtin_ean, prd_descricao, prd_un_compra, prd_un_venda, 
                                   prd_preco_compra, prd_margem_venda, prd_preco_venda, prd_ativo, prd_data_criacao
                            FROM TB_PRD_PRODUTO
@@ -39,7 +39,7 @@ namespace Web.Repositories
 
         public async Task InserirAsync(ProdutoModel produto)
         {
-            using var db = new SqlConnection(_connectionString);
+            using var db = new MySqlConnection(_connectionString);
             string sql = @"INSERT INTO TB_PRD_PRODUTO 
                             (prd_cod, prd_gtin_ean, prd_descricao, prd_un_compra, prd_un_venda, 
                              prd_preco_compra, prd_margem_venda, prd_preco_venda, prd_ativo, prd_data_criacao)
@@ -51,7 +51,7 @@ namespace Web.Repositories
 
         public async Task AtualizarAsync(ProdutoModel produto)
         {
-            using var db = new SqlConnection(_connectionString);
+            using var db = new MySqlConnection(_connectionString);
             string sql = @"UPDATE TB_PRD_PRODUTO SET
                                 prd_cod = @prd_cod,
                                 prd_gtin_ean = @prd_gtin_ean,

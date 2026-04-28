@@ -1,5 +1,5 @@
 using System.Data;
-using Microsoft.Data.SqlClient;
+using MySqlConnector;
 using Dapper;
 using nIKernel.Models.Usuario;
 using System.Security.Claims;
@@ -20,9 +20,9 @@ namespace nIKernel.Repositories
         {
             try
             {
-                using IDbConnection db = new SqlConnection(_connectionString);
+                using IDbConnection db = new MySqlConnection(_connectionString);
 
-                string sqlBusca = "SELECT * FROM TB_USU_USUARIOS WHERE USU_LOG = @Longin AND USU_STA = 'A'";
+                string sqlBusca = "SELECT * FROM TB_USU_USUARIOS WHERE USU_LOG = @Login AND USU_STA = 'A'";
                 var usuario = db.QueryFirstOrDefault<UsuarioModel>(sqlBusca, new { Login = loginOuEmail.Trim() });
 
                 string senhaCriptografada = GerarHashSha256(senhaDigitada.Trim());
@@ -30,10 +30,10 @@ namespace nIKernel.Repositories
 
                 if (usuario.USU_CNT == "S")
                 {
-                    throw new Exception("SESSAO_ATIVA");
+                    return new UsuarioModel { USU_NAM = "SESSAO_ATIVA" };
                 }
 
-                string sqlInsertConexao = @"INSERT INTO TB_UCN_USUARIOS_CONECTADOS (USU_ID, UCN_SESSION_ID, UCN_DTA_INC, UCN_AGT) VALUES (@UsuId, @SessionId, GETDATE(), @UserAgent)";
+                string sqlInsertConexao = @"INSERT INTO TB_UCN_USUARIOS_CONECTADOS (USU_ID, UCN_SESSION_ID, UCN_DTA_INC, UCN_AGT) VALUES (@UsuId, @SessionId, NOW(), @UserAgent)";
 
                 db.Execute(sqlInsertConexao, new
                 {
@@ -73,14 +73,13 @@ namespace nIKernel.Repositories
                         claims.Add(new Claim("MenuItem", $"{nomeTela}|{urlTela}"));
                     }   
                 }
-                string sqlUpdateStatus = "UPDATE TB_USU_USUARIOS SET USU_CNT = 'S' WHERE USU_ID = @Usu_Id";
+                string sqlUpdateStatus = "UPDATE TB_USU_USUARIOS SET USU_CNT = 'S' WHERE USU_ID = @UsuId";
                 db.Execute(sqlUpdateStatus, new {UsuId = usuario.USU_ID});
 
                 usuario.ClaimsDinamicas = claims;
                 return usuario;    
             } catch (Exception ex)
             {
-                if (ex.Message == "SESSAO_ATIVA") { throw; }
                 Console.WriteLine($"[ERRO DE LOGIN] {ex.Message}");
                 return null;
             }
@@ -88,7 +87,7 @@ namespace nIKernel.Repositories
 
         public async Task<IEnumerable<UsuarioModel>> ListarTodosAsync()
         {
-            using var db = new SqlConnection(_connectionString);
+            using var db = new MySqlConnection(_connectionString);
             string slq = @"SELECT U.*, P.PEF_DSC as PerfilDescricao FROM TB_USU_USUARIOS U 
             INNER JOIN TB_PEF_PERFIL P ON U.PRF_ID = P.PRF_ID ORDER BY U.USU_NAM";
             return await db.QueryAsync<UsuarioModel>(slq);
@@ -96,7 +95,7 @@ namespace nIKernel.Repositories
 
         public async Task InserirAsync(UsuarioModel usuario)
         {
-            using var db = new SqlConnection(_connectionString);
+            using var db = new MySqlConnection(_connectionString);
             
             usuario.USU_PWD = GerarHashSha256(usuario.USU_PWD);
             usuario.USU_DTA_INC = DateTime.Now;
@@ -108,14 +107,14 @@ namespace nIKernel.Repositories
 
         public async Task DeletarAsync(int id)
         {
-            using var db = new SqlConnection(_connectionString);
+            using var db = new MySqlConnection(_connectionString);
             string sql = "DELETE FROM TB_USU_USUARIOS WHERE USU_ID = @Id";
             await db.ExecuteAsync(sql, new { Id = id });
         }
 
         public async Task RegistrarLogoutAsync(int usuId)
         {
-            using IDbConnection db = new SqlConnection(_connectionString);
+            using IDbConnection db = new MySqlConnection(_connectionString);
             string sql = "UPDATE TB_USU_USUARIOS SET USU_CNT = 'N' WHERE USU_ID = @UsuId";
             await db.ExecuteAsync(sql, new { UsuId = usuId });
         }
@@ -136,14 +135,14 @@ namespace nIKernel.Repositories
 
         public async Task<UsuarioModel?> BuscarPorIdAsync(int id)
         {
-            using var db = new SqlConnection(_connectionString);
+            using var db = new MySqlConnection(_connectionString);
             string sql = @"SELECT * FROM TB_USU_USUARIOS WHERE USU_ID = @Id";
             return await db.QueryFirstOrDefaultAsync<UsuarioModel>(sql, new { Id = id });
         }
 
         public async Task AtualizarAsync(UsuarioModel usuario)
         {
-            using var db = new SqlConnection(_connectionString);
+            using var db = new MySqlConnection(_connectionString);
             string sql = @"UPDATE TB_USU_USUARIOS
             SET PRF_ID = @PRF_ID, 
             USU_LOG = @USU_LOG, 

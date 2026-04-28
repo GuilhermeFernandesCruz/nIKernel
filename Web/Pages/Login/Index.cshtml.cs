@@ -47,6 +47,12 @@ namespace nIKernel.Pages.Login
                     var usuario = _usuarioRepository.ValidarLogin(Input.Usuario, Input.Senha, ipCliente, hostNavegador, sessionId);
                     
                     if (usuario != null) {
+                        if (usuario.USU_NAM == "SESSAO_ATIVA") 
+                        {
+                            ModelState.AddModelError(string.Empty, "Acesso Negado: Este usuário já possui uma sessão ativa no sistema.");
+                            return Page();
+                        }
+
                         var identity = new ClaimsIdentity(usuario.ClaimsDinamicas, CookieAuthenticationDefaults.AuthenticationScheme);
                         var principal = new ClaimsPrincipal(identity);
 
@@ -66,10 +72,10 @@ namespace nIKernel.Pages.Login
                     ModelState.AddModelError(string.Empty, "Usuário, senha incorreta ou acesso inativo.");
                     return Page();
                 }
-            } catch (Exception ex) when (ex.Message == "SESSAO_ATIVA")
+            } catch (Exception ex)
             {
-                // Captura exatamente o erro de sessão dupla e exibe na tela
-                ModelState.AddModelError(string.Empty, "Acesso Negado: Este usuário já possui uma sessão ativa no sistema.");
+                // Erro genérico
+                ModelState.AddModelError(string.Empty, "Erro interno ao validar login. Tente novamente.");
                 return Page();
             }
         }

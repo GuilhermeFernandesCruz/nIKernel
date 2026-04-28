@@ -1,5 +1,5 @@
 using System.Data;
-using Microsoft.Data.SqlClient;
+using MySqlConnector;
 using Dapper;
 
 namespace nIKernel.Repositories
@@ -15,7 +15,7 @@ namespace nIKernel.Repositories
         // Retorna um tipo dinâmico pois é um JOIN entre sessões e Usuários
         public async Task<IEnumerable<dynamic>> ListarTodosAsync()
         {
-            using var db = new SqlConnection(_connectionString);
+            using var db = new MySqlConnection(_connectionString);
             string sql = @"SELECT 
             C.UCN_ID,
             C.UCN_DTA_INC,
@@ -31,7 +31,7 @@ namespace nIKernel.Repositories
         // Apaga o registro da sessão, forçando o usuário a logar novamente
         public async Task DeletarSessaoAsync(int id)
         {
-            using var db = new SqlConnection(_connectionString);
+            using var db = new MySqlConnection(_connectionString);
             string sql = "DELETE FROM TB_UCN_USUARIOS_CONECTADOS WHERE UCN_ID = @Id";
             await db.ExecuteAsync(sql, new { Id = id });
         }
