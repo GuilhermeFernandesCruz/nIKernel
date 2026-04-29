@@ -32,6 +32,10 @@ namespace Web.Pages.Admin.Produtos
         {
             if (!ModelState.IsValid)
                 return Page();
+                
+            // Recalcula o preco de venda caso a margem ou custo sofram alteracao
+            Produto.prd_preco_venda = Produto.prd_preco_compra + (Produto.prd_preco_compra * (Produto.prd_margem_venda / 100));
+            
             await _repo.AtualizarAsync(Produto);
             return RedirectToPage("Index");
         }

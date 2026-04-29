@@ -22,7 +22,7 @@ namespace Web.Repositories
             using var db = new MySqlConnection(_connectionString);
             string sql = @"SELECT prd_id, prd_cod, prd_gtin_ean, prd_descricao, prd_un_compra, prd_un_venda, 
                                   prd_preco_compra, prd_margem_venda, prd_preco_venda, prd_ativo, prd_data_criacao
-                           FROM TB_PRD_PRODUTO
+                           FROM tb_prd_produtos
                            ORDER BY prd_descricao";
             return await db.QueryAsync<ProdutoModel>(sql);
         }
@@ -32,7 +32,7 @@ namespace Web.Repositories
             using var db = new MySqlConnection(_connectionString);
             string sql = @"SELECT prd_id, prd_cod, prd_gtin_ean, prd_descricao, prd_un_compra, prd_un_venda, 
                                   prd_preco_compra, prd_margem_venda, prd_preco_venda, prd_ativo, prd_data_criacao
-                           FROM TB_PRD_PRODUTO
+                           FROM tb_prd_produtos
                            WHERE prd_id = @Id";
             return await db.QueryFirstOrDefaultAsync<ProdutoModel>(sql, new { Id = id });
         }
@@ -40,7 +40,7 @@ namespace Web.Repositories
         public async Task InserirAsync(ProdutoModel produto)
         {
             using var db = new MySqlConnection(_connectionString);
-            string sql = @"INSERT INTO TB_PRD_PRODUTO 
+            string sql = @"INSERT INTO tb_prd_produtos 
                             (prd_cod, prd_gtin_ean, prd_descricao, prd_un_compra, prd_un_venda, 
                              prd_preco_compra, prd_margem_venda, prd_preco_venda, prd_ativo, prd_data_criacao)
                            VALUES
@@ -52,7 +52,7 @@ namespace Web.Repositories
         public async Task AtualizarAsync(ProdutoModel produto)
         {
             using var db = new MySqlConnection(_connectionString);
-            string sql = @"UPDATE TB_PRD_PRODUTO SET
+            string sql = @"UPDATE tb_prd_produtos SET
                                 prd_cod = @prd_cod,
                                 prd_gtin_ean = @prd_gtin_ean,
                                 prd_descricao = @prd_descricao,

@@ -88,8 +88,8 @@ namespace nIKernel.Repositories
         public async Task<IEnumerable<UsuarioModel>> ListarTodosAsync()
         {
             using var db = new MySqlConnection(_connectionString);
-            string slq = @"SELECT U.*, P.PEF_DSC as PerfilDescricao FROM TB_USU_USUARIOS U 
-            INNER JOIN TB_PEF_PERFIL P ON U.PRF_ID = P.PRF_ID ORDER BY U.USU_NAM";
+            string slq = @"SELECT U.*, P.PRF_DSC as PerfilDescricao FROM tb_usu_usuarios U 
+            INNER JOIN tb_prf_perfil_acesso P ON U.PRF_ID = P.PRF_ID ORDER BY U.USU_NAM";
             return await db.QueryAsync<UsuarioModel>(slq);
         }
 

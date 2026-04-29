@@ -7,7 +7,7 @@
 <h1>Novo Produto</h1>
 <form method="post">
     <div class="form-group">
-        <label asp-for="Produto.prd_cod"></label>
+        <label asp-for="Produto.prd_cod"></label> 
         <input asp-for="Produto.prd_cod" class="form-control" />
         <span asp-validation-for="Produto.prd_cod" class="text-danger"></span>
     </div>
@@ -37,18 +37,16 @@
         <span asp-validation-for="Produto.prd_preco_compra" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Produto.prd_margem_venda"></label>
+        <label asp-for="Produto.prd_margem_venda">Margem de Lucro (%)</label>
         <input asp-for="Produto.prd_margem_venda" class="form-control" />
         <span asp-validation-for="Produto.prd_margem_venda" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Produto.prd_preco_venda"></label>
-        <input asp-for="Produto.prd_preco_venda" class="form-control" />
-        <span asp-validation-for="Produto.prd_preco_venda" class="text-danger"></span>
-    </div>
-    <div class="form-group">
         <label asp-for="Produto.prd_ativo"></label>
-        <input asp-for="Produto.prd_ativo" type="checkbox" />
+        <select asp-for="Produto.prd_ativo" class="form-control">
+            <option value="S">Sim</option>
+            <option value="N">Não</option>
+        </select>
         <span asp-validation-for="Produto.prd_ativo" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-success">Salvar</button>

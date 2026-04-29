@@ -10,6 +10,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<ConectadosRepository>();
 builder.Services.AddScoped<PerfilRepository>();
+builder.Services.AddScoped<Web.Repositories.ProdutoRepository>();
 
 // 2. AUTENTICAÇÃO: configura os cookies de segurança do site
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

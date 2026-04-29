@@ -13,7 +13,7 @@ namespace Web.Models.Produto
         public decimal prd_preco_compra { get; set; }
         public decimal prd_margem_venda { get; set; }
         public decimal prd_preco_venda { get; set; }
-        public bool prd_ativo { get; set; }
+        public string prd_ativo { get; set; } // Alterado de bool para string
         public DateTime prd_data_criacao { get; set; }
     }
 }

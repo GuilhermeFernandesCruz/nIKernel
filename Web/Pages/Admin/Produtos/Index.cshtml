@@ -26,7 +26,7 @@
             <td>@produto.prd_descricao</td>
             <td>@produto.prd_gtin_ean</td>
             <td>@produto.prd_preco_venda.ToString("C")</td>
-            <td>@(produto.prd_ativo ? "Sim" : "Não")</td>
+            <td>@(produto.prd_ativo == "S" ? "Sim" : "Não")</td>
             <td>
                 <a asp-page="Editar" asp-route-id="@produto.prd_id" class="btn btn-sm btn-warning">Editar</a>
                 <!--
