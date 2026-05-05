@@ -1,0 +1,56 @@
+@page
+@using nIKernel.Models.Cliente
+@model nIKernel.Pages.Clientes.IndexModel
+
+@{
+    ViewData["Title"] = "Clientes";
+}
+
+<h2>Lista de Clientes</h2>
+
+
+<p style="cursor:pointer; color: rgb(10, 41, 182);"
+   onclick="window.location.href='@Url.Page("/Index")'"> Voltar para o Menu
+</p>
+
+<br>
+<p style="cursor:pointer; color: rgb(10, 41, 182);"
+   onclick="window.location.href='@Url.Page("/Clientes/Criar")'">
+    Novo Cliente
+</p>
+
+@if (!Model.Clientes.Any())
+{
+    <p>Nenhum cliente encontrado.</p><br>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>CPF/CNPJ</th>
+                <th>RG/IE</th>
+                <th>Nome</th>
+                <th>Apelido</th>
+                <th>Status</th>
+                <th>Data de inclusão</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var cliente in Model.Clientes)
+        {
+            <tr >
+                <td>@cliente.CL_id</td>
+                <td>@cliente.CL_cpf_cnpj</td>
+                <td>@cliente.CL_rg_ie</td>
+                <td>@cliente.CL_nome</td>
+                <td>@cliente.CL_apelido</td>
+                <td>@cliente.CL_status</td>
+                <td>@cliente.CL_data_inclusao</td>
+                <td onclick="window.location.href='@Url.Page("/Clientes/Editar", new { id = cliente.CL_id })'" style="cursor:pointer; color: rgb(10, 41, 182);"> Editar</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
