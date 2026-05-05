@@ -73,7 +73,7 @@ namespace nIKernel.Repositories
                         claims.Add(new Claim("MenuItem", $"{nomeTela}|{urlTela}"));
                     }   
                 }
-                string sqlUpdateStatus = "UPDATE TB_USU_USUARIOS SET USU_CNT = 'S' WHERE USU_ID = @UsuId";
+                string sqlUpdateStatus = "UPDATE TB_USU_USUARIOS SET USU_CNT = 'N' WHERE USU_ID = @UsuId";
                 db.Execute(sqlUpdateStatus, new {UsuId = usuario.USU_ID});
 
                 usuario.ClaimsDinamicas = claims;

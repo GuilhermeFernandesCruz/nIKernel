@@ -9,6 +9,8 @@
     bool podeDerrubar = !string.IsNullOrEmpty(claimConectados) && claimConectados.Split(',')[3].Trim().ToUpper() == "S";
 }
 
+<a href="/" class="btn btn-primary m-2">Voltar para menu</a>
+
 <div class="card shadow-sm">
     <div class="card-header bg-white py-3">
         <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-cpu me-2"></i>Monitoranmento de Sessões</h6>
@@ -29,7 +31,7 @@
                 {
                     <tr>
                         <td>@item.USU_LOG</td>
-                        <td>@item.USU_DTA_INC.ToString("dd/MM/HH:mm")</td>
+                        <td>@item.UCN_DTA_INC?.ToString("dd/MM/HH:mm")</td>
                         <td class="small text-muted text-truncate" style="max-width: 150px">@item.UCN_SESSION_ID</td>
                         <td class="small text-muted">@item.UCN_AGT</td>
                         <td class="text-center">
