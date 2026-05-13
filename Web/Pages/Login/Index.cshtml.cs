@@ -29,7 +29,7 @@ namespace nIKernel.Pages.Login
             public string Senha {get; set; } = string.Empty;
         }
 
-        public void Onget() {}
+        public void OnGetAsync() {}
 
         // Mudamos para Async porque a gravação do Cookie exige paralelismo (await)
         public async Task<IActionResult> OnPostAsync()
@@ -44,18 +44,21 @@ namespace nIKernel.Pages.Login
                 string sessionId = HttpContext.Session.Id;
 
                 try {
-                    var usuario = _usuarioRepository.ValidarLogin(Input.Usuario, Input.Senha, ipCliente, hostNavegador, sessionId);
-                    
-                    if (usuario != null) {
-                        if (usuario.USU_NAM == "SESSAO_ATIVA") 
-                        {
-                            ModelState.AddModelError(string.Empty, "Acesso Negado: Este usuário já possui uma sessão ativa no sistema.");
-                            return Page();
-                        }
+                    var usuario = _usuarioRepository.ValidarLogin(
+                        Input.Usuario,
+                        Input.Senha,
+                        ipCliente,
+                        hostNavegador,
+                        sessionId
+                    );
 
-                        var identity = new ClaimsIdentity(usuario.ClaimsDinamicas, CookieAuthenticationDefaults.AuthenticationScheme);
+                    if (usuario != null)
+                    {
+                        var identity = new ClaimsIdentity(
+                            usuario.ClaimsDinamicas,
+                            CookieAuthenticationDefaults.AuthenticationScheme
+                        );
                         var principal = new ClaimsPrincipal(identity);
-
                         // NOVA BLINDAGEM DO COOKIE
                         var authProperties = new AuthenticationProperties
                         {
@@ -64,8 +67,11 @@ namespace nIKernel.Pages.Login
                         };
 
                         // Injetamos as propriedades aqui no SignIn
-                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
-
+                        await HttpContext.SignInAsync(
+                            CookieAuthenticationDefaults.AuthenticationScheme,
+                            principal,
+                            authProperties
+                        );
                         return RedirectToPage("/Index");
                 } else
                 {

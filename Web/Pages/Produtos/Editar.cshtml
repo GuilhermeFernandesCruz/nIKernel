@@ -6,6 +6,7 @@
 
 <h1>Editar Produto</h1>
 <form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Produto.prd_id" />
     <input type="hidden" asp-for="Produto.prd_data_criacao" />
     <div class="form-group">

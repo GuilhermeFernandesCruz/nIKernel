@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Web.Repositories;
+using MySqlConnector;
 using Web.Models.Produto;
+using System;
 using System.Threading.Tasks;
 
 namespace Web.Pages.Admin.Produtos
@@ -36,8 +38,33 @@ namespace Web.Pages.Admin.Produtos
             // Recalcula o preco de venda caso a margem ou custo sofram alteracao
             Produto.prd_preco_venda = Produto.prd_preco_compra + (Produto.prd_preco_compra * (Produto.prd_margem_venda / 100));
             
-            await _repo.AtualizarAsync(Produto);
-            return RedirectToPage("Index");
+            try
+            {
+                await _repo.AtualizarAsync(Produto);
+                return RedirectToPage("Index");
+            }
+            catch (MySqlException ex) when (ex.Number == 1062)
+            {
+                AddDuplicateKeyError(ex);
+                return Page();
+            }
+        }
+
+        private void AddDuplicateKeyError(MySqlException ex)
+        {
+            var message = ex.Message ?? string.Empty;
+            if (message.Contains("prd_gtin_ean", StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError("Produto.prd_gtin_ean", "GTIN/EAN ja cadastrado.");
+                return;
+            }
+            if (message.Contains("prd_cod", StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError("Produto.prd_cod", "Codigo ja cadastrado.");
+                return;
+            }
+
+            ModelState.AddModelError(string.Empty, "Nao foi possivel salvar o produto porque um valor duplicado foi encontrado.");
         }
     }
 }

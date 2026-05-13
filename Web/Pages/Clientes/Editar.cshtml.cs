@@ -20,33 +20,55 @@ namespace nIKernel.Pages.Clientes
     
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var client = await _clienteRepo.BuscarPorIdAsync(id);
-            if (client == null) { 
+            var claim = User.FindFirst("Permissao_Clientes")?.Value;
+
+            // Editar
+            if (string.IsNullOrEmpty(claim) || claim.Split(',')[2] != "S")
+            {
+                return RedirectToPage("/Index");
+            }
+
+            var cliente = await _clienteRepo.BuscarPorIdAsync(id);
+
+            if (cliente == null)
+            {
                 return RedirectToPage("/Clientes/Index");
             }
-            Cliente = client;
+
+            Cliente = cliente;
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            var claim = User.FindFirst("Permissao_Clientes")?.Value;
+
+            // Editar
+            if (string.IsNullOrEmpty(claim) || claim.Split(',')[2] != "S")
+            {
+                return RedirectToPage("/Index");
+            }
+
             if (!ModelState.IsValid)
             {
-                foreach (var erro in ModelState)
-                {
-                    Console.WriteLine($"ERROR {erro.Key}: {string.Join(",", erro.Value.Errors.Select(e => e.ErrorMessage))}");
-                }
-
                 return Page();
             }
-            
-            // Atualizando o cliente selecionado
+
             await _clienteRepo.AtualizarAsync(Cliente);
-            return RedirectToPage("/Clientes/Index");   
+            return RedirectToPage("/Clientes/Index");
         }
+
         public async Task<IActionResult> OnPostDeletarAsync(int id)
         {
+            var claim = User.FindFirst("Permissao_Clientes")?.Value;
+
+            // Excluir
+            if (string.IsNullOrEmpty(claim) || claim.Split(',')[3] != "S")
+            {
+                return RedirectToPage("/Index");
+            }
+
             await _clienteRepo.DeletarAsync(id);
             return RedirectToPage("/Clientes/Index");
         }

@@ -6,18 +6,18 @@
     ViewData["Title"] = "Clientes";
 }
 
+<br>
 <h2>Lista de Clientes</h2>
 
 
-<p style="cursor:pointer; color: rgb(10, 41, 182);"
+<p class="btn btn-primary px-5"
    onclick="window.location.href='@Url.Page("/Index")'"> Voltar para o Menu
 </p>
 
-<br>
-<p style="cursor:pointer; color: rgb(10, 41, 182);"
-   onclick="window.location.href='@Url.Page("/Clientes/Criar")'">
+<br><br>
+<a class="btn btn-primary px-5" asp-page="Criar">
     Novo Cliente
-</p>
+</a>
 
 @if (!Model.Clientes.Any())
 {
@@ -35,6 +35,7 @@ else
                 <th>Apelido</th>
                 <th>Status</th>
                 <th>Data de inclusão</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -48,7 +49,7 @@ else
                 <td>@cliente.CL_apelido</td>
                 <td>@cliente.CL_status</td>
                 <td>@cliente.CL_data_inclusao</td>
-                <td onclick="window.location.href='@Url.Page("/Clientes/Editar", new { id = cliente.CL_id })'" style="cursor:pointer; color: rgb(10, 41, 182);"> Editar</td>
+                <td> <a asp-page="Editar" asp-route-id="@cliente.CL_id" class="btn btn-sm btn-warning">Editar</a> </td>
             </tr>
         }
         </tbody>

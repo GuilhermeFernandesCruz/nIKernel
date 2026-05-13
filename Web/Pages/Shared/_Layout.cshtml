@@ -1,22 +1,132 @@
+@using System.Security.Claims
+
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - nIKernel</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Sistema</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
+
 <body>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
+    <div class="d-flex">
+        <aside class="bg-dark text-white p-3"
+               style="width: 260px; min-height: 100vh;">
+
+            <!-- LOGO / SISTEMA -->
+            <div class="mb-4">
+                <h5 class="fw-bold mb-0">
+                    Sistema
+                </h5>
+
+                <small class="text-secondary">
+                    Controle de Acesso
+                </small>
+            </div>
+
+            <!-- DADOS DO USUÁRIO -->
+            <div class="mb-4 border-bottom border-secondary pb-3">
+
+                <div class="fw-semibold">
+                    @User.Identity?.Name
+                </div>
+
+                <small class="text-secondary">
+                    Perfil:
+                    @User.Claims.FirstOrDefault(x => x.Type == "PerfilID")?.Value
+                </small>
+
+            </div>
+
+            <!-- MENU DINÂMICO -->
+            <ul class="nav nav-pills flex-column gap-1">
+
+                @foreach (var item in User.Claims.Where(x => x.Type == "MenuItem"))
+                {
+                    var partes = item.Value.Split('|');
+
+                    // Formato esperado:
+                    // Nome|Url|Icone
+
+                    string nome = partes.Length > 0
+                        ? partes[0]
+                        : "";
+
+                    string url = partes.Length > 1
+                        ? partes[1]
+                        : "#";
+
+                    string icone = partes.Length > 2
+                        ? partes[2]
+                        : "fa-solid fa-circle";
+
+                    <li class="nav-item">
+
+                        <a href="@url"
+                           class="nav-link text-white d-flex align-items-center gap-2 px-3 py-2">
+
+                            <i class="@icone"></i>
+
+                            <span>
+                                @nome
+                            </span>
+
+                        </a>
+
+                    </li>
+                }
+
+            </ul>
+            <div class="mt-5 pt-4 border-top border-secondary">
+
+                <a asp-page="/Login/Logout"
+                   class="btn btn-outline-light btn-sm w-100">
+
+                    <i class="fa-solid fa-right-from-bracket me-2"></i>
+                    Sair
+                </a>
+
+            </div>
+
+        </aside>
+        <main class="flex-grow-1">
+            <header class="bg-white border-bottom px-4 py-3 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        @ViewData["Title"]
+                    </h4>
+                    <div class="text-secondary small">
+                        Sessão:
+                        @User.Claims.FirstOrDefault(x => x.Type == "SessionID")?.Value
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTEÚDO PRINCIPAL -->
+            <div class="container-fluid p-4">
+                @RenderBody()
+            </div>
         </main>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/site.js"
+            asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

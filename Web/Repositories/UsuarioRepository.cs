@@ -16,74 +16,129 @@ namespace nIKernel.Repositories
             _connectionString = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
         }
 
-        public UsuarioModel? ValidarLogin(string loginOuEmail, string senhaDigitada, string ipCliente, string hostNavegador, string sessionId)
+        public UsuarioModel? ValidarLogin(
+    string loginOuEmail,
+    string senhaDigitada,
+    string ipCliente,
+    string hostNavegador,
+    string sessionId)
+{
+    using var connection = new MySqlConnection(_connectionString);
+
+    connection.Open();
+
+    // =====================================================
+    // BUSCA USUÁRIO
+    // =====================================================
+
+    var usuario = connection.QueryFirstOrDefault<UsuarioModel>(@"
+        SELECT
+            USU_ID,
+            PRF_ID,
+            USU_LOG,
+            USU_PWD,
+            USU_NAM,
+            USU_STA
+        FROM TB_USU_USUARIOS
+        WHERE
+        (
+            USU_LOG = @LOGIN
+            OR USU_EMAIL = @LOGIN
+        )
+        AND USU_STA = 'A'
+    ", new
+    {
+        LOGIN = loginOuEmail
+    });
+
+    if (usuario == null)
+        return null;
+
+    // =====================================================
+    // VALIDA SENHA COM SHA256
+    // =====================================================
+
+    string senhaHash = GerarHashSHA256(senhaDigitada);
+
+    if (usuario.USU_PWD != senhaHash)
+        return null;
+
+    // =====================================================
+    // CLAIMS
+    // =====================================================
+
+    var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, usuario.USU_NAM),
+
+        new Claim(
+            "UsuarioID",
+            usuario.USU_ID.ToString()
+        ),
+
+        new Claim(
+            "PerfilID",
+            usuario.PRF_ID.ToString()
+        ),
+
+        new Claim(
+            "SessionID",
+            sessionId
+        )
+    };
+
+    // =====================================================
+    // MENU DINÂMICO
+    // =====================================================
+
+    var permissoesBanco = connection.Query(@"
+        SELECT
+            O.OBJ_NAM,
+            O.OBJ_DSC,
+            P.OBJ_PRF_CNT,
+            P.OBJ_PRF_INP,
+            P.OBJ_PRF_UPT,
+            P.OBJ_PRF_DEL,
+            P.OBJ_PRF_PRT
+        FROM TB_OBJ_PRF_OBJETO_PERFIL P
+        INNER JOIN TB_OBJ_OBJETO_SISTEMA O
+            ON P.OBJ_ID = O.OBJ_ID
+        WHERE
+            P.PRF_ID = @PERFIL
+            AND O.OBJ_STA = 'A'
+        ORDER BY O.OBJ_NAM
+    ", new
+    {
+        PERFIL = usuario.PRF_ID
+    });
+
+    foreach (var perm in permissoesBanco)
+    {
+        string direitos =
+            $"{perm.OBJ_PRF_CNT}," +
+            $"{perm.OBJ_PRF_INP}," +
+            $"{perm.OBJ_PRF_UPT}," +
+            $"{perm.OBJ_PRF_DEL}," +
+            $"{perm.OBJ_PRF_PRT}";
+
+        claims.Add(new Claim(
+            $"Permissao_{perm.OBJ_NAM}",
+            direitos
+        ));
+
+        if (perm.OBJ_PRF_CNT == "S")
         {
-            try
-            {
-                using IDbConnection db = new MySqlConnection(_connectionString);
-
-                string sqlBusca = "SELECT * FROM TB_USU_USUARIOS WHERE USU_LOG = @Login AND USU_STA = 'A'";
-                var usuario = db.QueryFirstOrDefault<UsuarioModel>(sqlBusca, new { Login = loginOuEmail.Trim() });
-
-                string senhaCriptografada = GerarHashSha256(senhaDigitada.Trim());
-                if (usuario == null || usuario.USU_PWD.Trim() != senhaCriptografada) return null;
-
-                if (usuario.USU_CNT == "S")
-                {
-                    return new UsuarioModel { USU_NAM = "SESSAO_ATIVA" };
-                }
-
-                string sqlInsertConexao = @"INSERT INTO TB_UCN_USUARIOS_CONECTADOS (USU_ID, UCN_SESSION_ID, UCN_DTA_INC, UCN_AGT) VALUES (@UsuId, @SessionId, NOW(), @UserAgent)";
-
-                db.Execute(sqlInsertConexao, new
-                {
-                    UsuId = usuario.USU_ID,
-                    SessionId = sessionId,
-                    UserAgent = hostNavegador
-                }); 
-
-                string sqlPermissoes = @"
-                SELECT O.OBJ_NAM, O.OBJ_DSC, P.OBJ_PRF_CNT, P.OBJ_PRF_INP, P.OBJ_PRF_UPT, P.OBJ_PRF_DEL
-                FROM TB_OBJ_PRF_OBJETO_PERFIL P INNER JOIN TB_OBJ_OBJETO_SISTEMA O ON P.OBJ_ID = O.OBJ_ID
-                WHERE P.PRF_ID = @PerfilId AND O.OBJ_STA = 'A'";
-
-                var permissoesBanco = db.Query(sqlPermissoes, new {PerfilId = usuario.PRF_ID});
-
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, usuario.USU_NAM),
-                    new Claim("UsuarioID", usuario.USU_ID.ToString()),
-                    new Claim("PerfilID", usuario.PRF_ID.ToString())
-                };
-
-                foreach (var perm in permissoesBanco)
-                {
-                    string nomeTela = perm.OBJ_NAM?.ToString() ?? "";
-                    string urlTela = perm.OBJ_DSC?.ToString() ?? "";
-                    string cnt = perm.OBJ_PRF_CNT?.ToString().Trim().ToUpper() ?? "N";
-                    string inp = perm.OBJ_PRF_INP?.ToString().Trim().ToUpper() ?? "N";
-                    string upt = perm.OBJ_PRF_UPT?.ToString().Trim().ToUpper() ?? "N";
-                    string del = perm.OBJ_PRF_DEL?.ToString().Trim().ToUpper() ?? "N";
-
-                    string direitos = $"{cnt},{inp},{upt},{del}";
-                    claims.Add(new Claim($"Permissao_{nomeTela}", direitos));
-
-                    if (cnt == "S")
-                    {
-                        claims.Add(new Claim("MenuItem", $"{nomeTela}|{urlTela}"));
-                    }   
-                }
-                string sqlUpdateStatus = "UPDATE TB_USU_USUARIOS SET USU_CNT = 'N' WHERE USU_ID = @UsuId";
-                db.Execute(sqlUpdateStatus, new {UsuId = usuario.USU_ID});
-
-                usuario.ClaimsDinamicas = claims;
-                return usuario;    
-            } catch (Exception ex)
-            {
-                Console.WriteLine($"[ERRO DE LOGIN] {ex.Message}");
-                return null;
-            }
+            claims.Add(new Claim(
+                "MenuItem",
+                $"{perm.OBJ_NAM}|{perm.OBJ_DSC}|fa-solid fa-folder"
+            ));
         }
+    }
+
+    usuario.ClaimsDinamicas = claims;
+
+    return usuario;
+}
 
         public async Task<IEnumerable<UsuarioModel>> ListarTodosAsync()
         {
@@ -132,6 +187,24 @@ namespace nIKernel.Repositories
                 return builder.ToString();
             }
         }
+
+        private string GerarHashSHA256(string texto)
+    {
+        using var sha256 = SHA256.Create();
+
+        byte[] bytes = Encoding.UTF8.GetBytes(texto);
+
+        byte[] hash = sha256.ComputeHash(bytes);
+
+        StringBuilder builder = new StringBuilder();
+
+        foreach (byte b in hash)
+        {
+            builder.Append(b.ToString("x2"));
+        }
+
+        return builder.ToString();
+    }
 
         public async Task<UsuarioModel?> BuscarPorIdAsync(int id)
         {

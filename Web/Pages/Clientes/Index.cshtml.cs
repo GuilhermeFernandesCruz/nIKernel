@@ -18,6 +18,14 @@ namespace nIKernel.Pages.Clientes
 
         public async Task<IActionResult> OnGetAsync()
         {
+            var claim = User.FindFirst("Permissao_Clientes")?.Value;
+
+            // Visualizar
+            if (string.IsNullOrEmpty(claim) || claim.Split(',')[0] != "S")
+            {
+                return RedirectToPage("/Index");
+            }
+
             Clientes = await _clienteRepo.ListarTodosAsync();
             return Page();
         }

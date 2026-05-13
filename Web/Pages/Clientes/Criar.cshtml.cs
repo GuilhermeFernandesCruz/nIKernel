@@ -20,24 +20,32 @@ namespace nIKernel.Pages.Clientes
 
         public IActionResult OnGet()
         {
+            var claim = User.FindFirst("Permissao_Clientes")?.Value;
+
+            // Inserir
+            if (string.IsNullOrEmpty(claim) || claim.Split(',')[1] != "S")
+                return RedirectToPage("/Index");
+
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            var claim = User.FindFirst("Permissao_Clientes")?.Value;
+
+            // Inserir
+            if (string.IsNullOrEmpty(claim) || claim.Split(',')[1] != "S")
+            {
+                return RedirectToPage("/Index");
+            }
+
             if (!ModelState.IsValid)
             {
-                foreach (var erro in ModelState)
-                {
-                    Console.WriteLine($"ERROR {erro.Key}: {string.Join(",", erro.Value.Errors.Select(e => e.ErrorMessage))}");
-                }
-
                 return Page();
             }
-            
-            // Atualizando o cliente selecionado
+
             await _clienteRepo.InserirAsync(Cliente);
-            return RedirectToPage("/Clientes/Index");   
+            return RedirectToPage("/Clientes/Index");
         }
     }
 }
